@@ -49,3 +49,19 @@ Approach :
 ## POSTGRES DB SETUP
     - Firewall rule, had to allow my local machine's IP to make the connection via the portal
     - I think this is only server settings, need to check whether end users will be affected or not
+
+## BACKLOG
+    - Complete end to end deployment
+    - Add better logs on the backend
+    - Improve the UI of the financials - it should mention - billion units
+    - Improve chat formatting and responsiveness for the UI
+    - Split into frontend and backend microservices
+    - Add authentication to this project
+    - Azure AI Search index schema changes are not applied on startup
+        - create_index.py now skips creation if the index already exists (guardrail added so startup doesn't recreate it every run)
+        - Side effect: changes to the index fields (e.g. embedding_dimensions, new filterable fields) won't reach Azure automatically
+        - Current workaround: delete the index and restart the app, or run create_or_update_index manually
+        - TODO: add a schema check / migration step that compares the existing index fields with the expected ones and updates or warns on mismatch
+
+## PERFORMANCE LOG
+    - Tesla took 4 minutes to process with 150 chunks

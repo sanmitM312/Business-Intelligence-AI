@@ -1,10 +1,14 @@
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 
 from database.postgres_sql import get_engine, create_database
 
 
 def create_tables() -> None:
     engine = get_engine()
+
+    if inspect(engine).has_table("financial_metrics"):
+        print("financial_metrics table already exists, skipping creation.")
+        return
 
     query = """
     CREATE TABLE IF NOT EXISTS financial_metrics (
