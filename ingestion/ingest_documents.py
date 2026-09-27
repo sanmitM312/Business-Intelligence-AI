@@ -8,7 +8,7 @@ from ingestion.pdf_to_markdown import PDFToMarkdownConverter
 from ingestion.semantic_chunker import chunk_markdown
 from vectorstore.azure_ai_search import AzureAISearchVectorStore
 from rag.kpi_extractor_rag import extract_financial_metrics
-# from database.save_metrics import save_metrics
+from database.save_metrics import save_metrics
 from vectorstore.azure_ai_search import Retriever
 
 load_dotenv()
@@ -78,9 +78,8 @@ def ingest_document(
     )
 
     # Persist metrics to PostgreSQL
-    # Do it after ingestion works
-    # if metrics:
-    #     save_metrics(company=company, year=int(year) if str(year).isdigit() else None, metrics=metrics)
+    if metrics:
+        save_metrics(company=company, year=int(year) if str(year).isdigit() else None, metrics=metrics)
 
 
 def ingest_directory(input_dir: str) -> None:

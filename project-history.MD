@@ -45,3 +45,7 @@ Approach :
         - database.save_metrics -> save_metrics (DO IT AFTER INGESTION IN AZURE)
         
         - Question : Difference between KPI-EXTRACTOR-RAG's Retriever and Azure AI Search's Retriever
+
+## POSTGRES DB SETUP
+    - Firewall rule, had to allow my local machine's IP to make the connection via the portal
+    - I think this is only server settings, need to check whether end users will be affected or not
