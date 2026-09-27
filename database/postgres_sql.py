@@ -2,6 +2,7 @@ import os
 from urllib.parse import quote
 
 import psycopg2
+from psycopg2 import sql
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 
@@ -47,6 +48,9 @@ def create_database() -> None:
     port = os.getenv("POSTGRES_PORT")
     user = os.getenv("POSTGRES_USER")
     password = os.getenv("POSTGRES_PASSWORD")
+
+    if not all([target_db, host, port, user, password]):
+        raise ValueError("Missing POSTGRES_* settings in environment; cannot create database.")
     
     try:
         # Connect to default 'postgres' database using psycopg2 directly
@@ -71,10 +75,12 @@ def create_database() -> None:
             
             if not cursor.fetchone():
                 print(f"Database '{target_db}' does not exist. Creating...")
-                cursor.execute(f"CREATE DATABASE {target_db}")
+                cursor.execute(
+                    sql.SQL("CREATE DATABASE {}").format(sql.Identifier(target_db))
+                )
                 print(f"Database '{target_db}' created successfully.")
             else:
-                print(f"Database '{target_db}' already exists.")
+                print(f"Database '{target_db}' already exists, skipping creation.")
         finally:
             cursor.close()
             conn.close()

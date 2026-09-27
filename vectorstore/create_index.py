@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 
 from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import ResourceNotFoundError
 from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import (
     HnswAlgorithmConfiguration,
@@ -32,11 +33,22 @@ def create_index(
             index_name: Index name
             embedding_dimensions: embedding dimensions
     """
+    if not all([endpoint, api_key, index_name]):
+        raise ValueError("Missing AZURE_SEARCH_* settings in environment; cannot create index.")
+
     # initialize the vector search index client to create the necessary fields in the index
     client = SearchIndexClient(
         endpoint=endpoint,
         credential=AzureKeyCredential(api_key)
     )
+
+    # skip creation if the index is already there
+    try:
+        client.get_index(index_name)
+        print(f"Index '{index_name}' already exists, skipping creation.")
+        return
+    except ResourceNotFoundError:
+        pass
 
     # add the fields in the index of the vector store
     fields = [
@@ -74,7 +86,7 @@ def create_index(
     )
 
     # perform the transaction 
-    client.create_or_update_index(index)
+    client.create_index(index)
     
     print(f"Index '{index_name}' created successfully.")
 
