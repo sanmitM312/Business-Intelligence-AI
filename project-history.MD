@@ -25,14 +25,23 @@ Approach :
             - upload_chunks is the part of it
         - integrate both under ingest_documents
 
-### PLAN TO RETRIEVE THE KPIS FROM VECTORSTORE
-        - rag.kpi_extractor_rag -> extract_financial_metrics (DO IT AFTER INGESTION IN AZURE)
-
-        - database.save_metrics -> save_metrics (DO IT AFTER INGESTION IN AZURE)
-        - vectorstore -> azure_ai_search -> Retriever(DO IT AFTER INGESTION IN AZURE)
-
 
 ## AZURE SETUP
 - From Microsoft Foundary, create a new resource to deploy the target embedding model
 - From overview, get the azure api endpoint (Azure OpenAI) 
 - Azure AI Search Service setup under the ai investing resource group
+
+## RETRIEVAL PIPELINE
+
+### PLAN TO RETRIEVE THE KPIS FROM VECTORSTORE
+        - vectorstore -> azure_ai_search -> Retriever (Check the Namespace stuff also)
+            - Defines the retriever to retrieve the relevant chunks for the KPIs (DONE)
+
+        - rag.kpi_extractor_rag -> extract_financial_metrics 
+            - Defines the context extraction and structured output generation methods (DONE)
+
+        - llms.azure_openai -> structured_completion -> to tie up with OpenAI's chat api (DONE)
+        
+        - database.save_metrics -> save_metrics (DO IT AFTER INGESTION IN AZURE)
+        
+        - Question : Difference between KPI-EXTRACTOR-RAG's Retriever and Azure AI Search's Retriever
