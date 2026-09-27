@@ -25,7 +25,8 @@ class PDFToMarkdownConverter:
         markdown_content = pymupdf4llm.to_markdown(str(pdf_file))
 
         markdown_file = output_path / f"{pdf_file.stem}.md"
-
+        
+        # the content of the markdown file is written at the above location
         markdown_file.write_text(
             markdown_content,
             encoding="utf-8"
