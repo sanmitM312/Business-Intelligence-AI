@@ -43,6 +43,8 @@ class Retriever:
                 f"and year eq '{year}'"
             )
 
+        print(f"[retrieve] query_len={len(query)} chars, top_k={top_k}, filter={filter_expr!r}")
+
         results = (
             self.client.search(
                 search_text=query,
@@ -65,6 +67,13 @@ class Retriever:
                     page_content=content
                 )
             )
+
+        print(f"[retrieve] retrieved {len(documents)} document(s)")
+        if documents:
+            sample = documents[0].page_content[:200].replace("\n", " ")
+            print(f"[retrieve] first doc preview: {sample!r}")
+        else:
+            print("[retrieve] WARNING: no documents returned — filter likely does not match uploaded chunk metadata")
 
         return documents
 
@@ -150,11 +159,18 @@ def extract_financial_metrics(
     Extract KPIs using RAG
     """
 
+    print(f"[extract] company={company!r} year={year!r} (type={type(year).__name__})")
+
     context = retrieve_context(
         retriever=retriever,
         company=company,
         year=year
     )
+
+    approx_tokens = len(context) // 4
+    print(f"[extract] context: {len(context)} chars (~{approx_tokens} tokens)")
+    if not context.strip():
+        print("[extract] WARNING: context is empty — LLM will return nulls")
 
     prompt = build_extraction_prompt(
         retriever=retriever,
@@ -163,16 +179,22 @@ def extract_financial_metrics(
         context=context
     )
 
+    print(f"[extract] prompt: {len(prompt)} chars (~{len(prompt) // 4} tokens)")
+
     metrics = get_structured_completion(
         prompt=prompt,
         response_model=FinancialMetrics
     )
 
-    return metrics.model_dump()
+    dumped = metrics.model_dump()
+    non_null = {k: v for k, v in dumped.items() if v not in (None, "", [])}
+    print(f"[extract] parsed metrics: {len(non_null)}/{len(dumped)} fields populated. keys with values: {list(non_null.keys())}")
+
+    return dumped
 
 
 def main() -> None:
-    company = "Google"
+    company = "microsoft"
     year = 2025
 
     vector_store = AzureAISearchVectorStore(
