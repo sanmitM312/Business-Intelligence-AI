@@ -45,6 +45,18 @@ def save_metrics(
     )
     """
 
+    print(f"[save_metrics] received keys: {list(metrics.keys())}")
+
+    def _as_list(value):
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return [value]
+        return list(value)
+
+    risks = _as_list(metrics.get("Top Risk Factors") or metrics.get("risk_factors"))
+    drivers = _as_list(metrics.get("Top Growth Drivers") or metrics.get("growth_drivers"))
+
     # Use both capitalized and lower‑case keys from the extraction model
     params = {
         "company": company,
@@ -55,8 +67,8 @@ def save_metrics(
         "cash_flow": metrics.get("Cash Flow from Operating Activities") or metrics.get("cash_flow"),
         "total_assets": metrics.get("Total Assets") or metrics.get("total_assets"),
         "total_liabilities": metrics.get("Total Liabilities") or metrics.get("total_liabilities"),
-        "risk_factors": "\n".join(metrics.get("Top Risk Factors", []) or metrics.get("risk_factors", [])),
-        "growth_drivers": "\n".join(metrics.get("Top Growth Drivers", []) or metrics.get("growth_drivers", []))
+        "risk_factors": "\n".join(risks),
+        "growth_drivers": "\n".join(drivers)
     }
 
     with engine.begin() as connection:

@@ -65,3 +65,11 @@ Approach :
 
 ## PERFORMANCE LOG
     - Tesla took 4 minutes to process with 150 chunks
+
+
+## DEPLOYMENT LOGS
+    - Dockerfile created
+    - Docker image built and deployed in local container, running on localhost:8000
+    - changed my wifi also public ip , had to go to azure postgres db networking firewall and allow this ip 
+    - Failure in retrieving the chunks for kpi-extraction (isolate the failure modes)
+    
