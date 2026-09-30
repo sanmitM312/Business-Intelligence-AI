@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+
+
+metadata:
+  name: intinv
+
+
+spec:
+  replicas: 1
+
+  selector:
+    macthLabels:
+      apps: intinv
+  
+  template:
+    metadata:
+      labels:
+        app: intinv
+  
+  spec:
+    containers:
+    - name: intinv
+
+      image: intinvestor.azurecr.io/intinv:latest
+
+      imagePullPolicy: Always
+
+      envFrom:
+      - secretRef:
+          name: intinv-secrets
+      
+      ports:
+      - containerPort: 8000
+
